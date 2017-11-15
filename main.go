@@ -72,7 +72,9 @@ func main() {
 }
 
 func testhandler(w http.ResponseWriter, r *http.Request) {
+
 	webhook := "https://hooks.slack.com/services/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"
+	w.Header().Set("Content-Type", "application/json")
 	var body = []byte(`{"text":"Fuck you!"}`)
 	http.NewRequest("POST", webhook, bytes.NewBuffer(body))
 	fmt.Fprintln(w, "hello")
