@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -38,6 +39,7 @@ type FromDialogFlow struct {
 	} `json:"result"`
 }
 
+//CurrencyRequest holds the structure of sending data to dialogFlow
 type CurrencyRequest struct {
 	DisplayText string `json:"displayText"`
 	Speech      string `json:"speech"`
@@ -58,12 +60,29 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error decoding post request for average", http.StatusBadRequest)
 		return
 	}
+
 	//Send to assignment2
+	URL := "https://lit-harbor-76549.herokuapp.com/latest"
+
+	toSend, err := json.Marshal(l.Result.Parameters)
+
+	resp, err := http.Post(URL, "application/json", bytes.NewReader(toSend))
+	if err != nil {
+		//respond to error
+	}
+	var current string
+	err = json.NewDecoder(resp.Body).Decode(&current)
 
 	//send back to dialogflow
 	var dialogResponse CurrencyRequest
 	str := ""
-	str += "The rate between ..."
+	str += "The rate between "
+	str += l.Result.Parameters.BaseCurrency
+	str += " and "
+	str += l.Result.Parameters.TargetCurrency
+	str += " is "
+	str += current
+	str += "."
 
 	dialogResponse.DisplayText = str
 	dialogResponse.Speech = str
@@ -71,7 +90,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	http.Header.Add(w.Header(), "content-type", "application/json")
 	err = json.NewEncoder(w).Encode(dialogResponse)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusTeapot)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 }
