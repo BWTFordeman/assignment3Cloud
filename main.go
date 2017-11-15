@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 //outgoingPost is the structure of json values posting to dialogflow
@@ -70,7 +71,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		//respond to error
 	}
-	var current string
+	var current float64
 	err = json.NewDecoder(resp.Body).Decode(&current)
 
 	log.Println(current)
@@ -83,7 +84,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	str += " and "
 	str += l.Result.Parameters.TargetCurrency
 	str += " is "
-	str += current
+	str += strconv.FormatFloat(float64(current), 'f', 2, 32)
 	str += "."
 
 	dialogResponse.DisplayText = str
