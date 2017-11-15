@@ -73,6 +73,8 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	var current string
 	err = json.NewDecoder(resp.Body).Decode(&current)
 
+	log.Println(current)
+
 	//send back to dialogflow
 	var dialogResponse CurrencyRequest
 	str := ""
