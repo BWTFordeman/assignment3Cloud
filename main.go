@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -28,81 +28,50 @@ type IncomingPost struct {
 	SessionID string `json:"sessionId"`
 }
 
-/*{
-  "id": "f4f70dee-5ac4-4d4a-8c46-4e3b7d7f327f",
-  "timestamp": "2017-11-15T12:36:02.275Z",
-  "lang": "en",
-  "result": {
-    "source": "agent",
-    "resolvedQuery": "hi",
-    "action": "input.unknown",
-    "actionIncomplete": false,
-    "parameters": {},
-    "contexts": [],
-    "metadata": {
-      "intentId": "459844df-995f-41c3-b301-47904e3f9b09",
-      "webhookUsed": "false",
-      "webhookForSlotFillingUsed": "false",
-      "intentName": "Default Fallback Intent"
-    },
-    "fulfillment": {
-      "speech": "One more time?",
-      "messages": [
-        {
-          "type": 0,
-          "speech": "Sorry, what was that?"
-        }
-      ]
-    },
-    "score": 1
-  },
-  "status": {
-    "code": 200,
-    "errorType": "success",
-    "webhookTimedOut": false
-  },
-  "sessionId": "edd422d8-9619-4871-9e31-53270f020cec"
-}*/
+//FromDialogFlow recieved base and target currency from dialogFlow
+type FromDialogFlow struct {
+	Result struct {
+		Parameters struct {
+			BaseCurrency   string `json:"baseCurrency"`
+			TargetCurrency string `json:"targetCurrency"`
+		} `json:"parameters"`
+	} `json:"result"`
+}
 
-type test struct {
-	Text string `json:"text"`
+type CurrencyRequest struct {
+	DisplayText string `json:"displayText"`
+	Speech      string `json:"speech"`
 }
 
 func main() {
-	http.HandleFunc("/", testhandler)
+	http.HandleFunc("/dialogflow", testhandler)
 
 	log.Println("http.ListenAndServe", http.ListenAndServe(":"+os.Getenv("PORT"), nil), nil)
 }
 
 func testhandler(w http.ResponseWriter, r *http.Request) {
-	//Getting message from slack:
-	err := r.ParseForm()
+
+	var l FromDialogFlow
+
+	err := json.NewDecoder(r.Body).Decode(&l)
 	if err != nil {
-		http.Error(w, "Error parsing", http.StatusTeapot)
+		http.Error(w, "Error decoding post request for average", http.StatusBadRequest)
+		return
 	}
-	form := r.Form
+	//Send to assignment2
 
-	t := test{}
-	t.Text = form.Get("text")
+	//send back to dialogflow
+	var dialogResponse CurrencyRequest
+	str := ""
+	str += "The rate between ..."
 
-	//sending message to dialogflow:
+	dialogResponse.DisplayText = str
+	dialogResponse.Speech = str
 
-	//sending message to other Application
-
-	//Use correct body for sending message to slack:
-
-	//Sending message to slack:
-	webhook := "https://hooks.slack.com/services/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"
-	var body = []byte(t.Text)
-	req, err := http.NewRequest("POST", webhook, bytes.NewBuffer(body))
+	http.Header.Add(w.Header(), "content-type", "application/json")
+	err = json.NewEncoder(w).Encode(dialogResponse)
 	if err != nil {
-		http.Error(w, "Error parsing", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusTeapot)
 	}
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		http.Error(w, "Error posting", http.StatusBadRequest)
-	}
-	defer resp.Body.Close()
 
 }
