@@ -1,8 +1,6 @@
 package main
 
 import (
-	"discordBot/goBot/bot"
-	"discordBot/goBot/config"
 	"fmt"
 	"log"
 	"net/http"
@@ -52,14 +50,6 @@ import (
 
 func main() {
 	http.HandleFunc("/", testhandler)
-	err := config.ReadConfig()
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	bot.Start()
 
 	log.Println("http.ListenAndServe", http.ListenAndServe(":"+os.Getenv("PORT"), nil), nil)
 }
