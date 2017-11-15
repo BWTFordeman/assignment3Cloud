@@ -1,16 +1,23 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
 	"log"
 	"net/http"
 	"os"
 )
 
 //IncomingPost gets the json values from dialogflow
-/*type IncomingPost struct {
-  ID string `json:"id"`
-}*/
+type IncomingPost struct {
+	ID        string `json:"id"`
+	Timestamp string `json:"timestamp"`
+	Lang      string `json:"lang"`
+	Result    struct {
+	} `json:"result"`
+	Status struct {
+	} `json:"status"`
+	SessionID string `json:"sessionId"`
+}
 
 /*{
   "id": "f4f70dee-5ac4-4d4a-8c46-4e3b7d7f327f",
@@ -55,10 +62,36 @@ func main() {
 }
 
 func testhandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Testing")
 	//Get incoming post Request with json values from dialogflow
+	if r.Method == "POST" {
+		/*	decoder := json.NewDecoder(r.Body)
+			var f IncomingPost
 
-	//Edit the values in order to send to assignment2 application
+			err := decoder.Decode(&f)
+			if err != nil {
+				http.Error(w, "Error decoding post request for average", http.StatusBadRequest)
+			} else {
+		*/
+		//Edit the values in order to send to assignment2 application
 
-	//Send response back to dialogflow with correct values in json format.
+		//Send response back to dialogflow with correct values in json format.
+		url := "https://api.dialogflow.com/v1/query?v=20150910"
+		var body = []byte(`{"title":"Do you think I am dumb?"}`)
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+		if err != nil {
+			panic(err)
+		}
+		req.Header.Set("Content-Type", "Application/json")
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+
+		//}
+	} else {
+		http.Error(w, "Invalid request type", http.StatusMethodNotAllowed)
+	}
 }
