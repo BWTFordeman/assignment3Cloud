@@ -96,12 +96,12 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	var body = []byte(t.Text)
 	req, err := http.NewRequest("POST", webhook, bytes.NewBuffer(body))
 	if err != nil {
-		http.Error(w, "Error parsing", http.StatusTeapot)
+		http.Error(w, "Error parsing", http.StatusBadRequest)
 	}
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		http.Error(w, "Error posting", http.StatusTeapot)
+		http.Error(w, "Error posting", http.StatusBadRequest)
 	}
 	defer resp.Body.Close()
 
