@@ -1,0 +1,37 @@
+{
+	"ImportPath": "slackBot",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "discordBot/goBot/bot",
+			"Rev": "8825c3e5c1de8fa0ce352e68f0005d9255c61bf5"
+		},
+		{
+			"ImportPath": "discordBot/goBot/config",
+			"Rev": "8825c3e5c1de8fa0ce352e68f0005d9255c61bf5"
+		},
+		{
+			"ImportPath": "github.com/bwmarrin/discordgo",
+			"Comment": "v0.17.0",
+			"Rev": "2fda7ce223a66a5b70b66987c22c3c94d022ee66"
+		},
+		{
+			"ImportPath": "github.com/gorilla/websocket",
+			"Comment": "v1.2.0-9-g4201258",
+			"Rev": "4201258b820c74ac8e6922fc9e6b52f71fe46f8d"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/nacl/secretbox",
+			"Rev": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/poly1305",
+			"Rev": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/salsa20/salsa",
+			"Rev": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3"
+		}
+	]
+}
