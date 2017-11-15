@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -80,7 +79,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	form := r.Form
 
 	form.Get("text")
-	fmt.Fprintln(w, form)
+	log.Println(form)
 
 	//sending message to dialogflow:
 
