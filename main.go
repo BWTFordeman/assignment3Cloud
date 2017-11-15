@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -73,6 +72,10 @@ func main() {
 }
 
 func testhandler(w http.ResponseWriter, r *http.Request) {
+	webhook := "https://hooks.slack.com/services/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"
+	var body = []byte(`{"text":"Fuck you!"}`)
+	http.NewRequest("POST", webhook, bytes.NewBuffer(body))
+	fmt.Fprintln(w, "hello")
 	//Get incoming post Request with json values from dialogflow
 	//if r.Method == "POST" {
 	/*	decoder := json.NewDecoder(r.Body)
@@ -87,7 +90,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	//Edit the values in order to send to assignment2 application
 
 	//Send response back to dialogflow with correct values in json format.
-	var test = outgoingPost{}
+	/*var test = outgoingPost{}
 	test.Contexts[0] = "shop"
 	test.Lang = "en"
 	test.Query = "Fuck you!"
@@ -98,9 +101,9 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintln(w, "error marshalling")
 	}
-	url := "https://api.dialogflow.com/v1/query?v=20150910"
+	webhook := "https://hooks.slack.com/services/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"
 	var body = []byte(b)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", webhook, bytes.NewBuffer(body))
 	if err != nil {
 		panic(err)
 	}
@@ -114,7 +117,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	defer resp.Body.Close()
-
+	*/
 	//}
 	/*} else {
 		http.Error(w, "Invalid request type", http.StatusMethodNotAllowed)
