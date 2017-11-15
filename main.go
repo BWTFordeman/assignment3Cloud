@@ -82,10 +82,8 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	}
 	form := r.Form
 
-	form.Get("text")
-
 	t := test{}
-	t.Text = form.Encode()
+	t.Text = form.Get("text")
 
 	//sending message to dialogflow:
 
