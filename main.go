@@ -74,49 +74,49 @@ func main() {
 
 func testhandler(w http.ResponseWriter, r *http.Request) {
 	//Get incoming post Request with json values from dialogflow
-	if r.Method == "GET" {
-		/*	decoder := json.NewDecoder(r.Body)
-			var f IncomingPost
+	//if r.Method == "POST" {
+	/*	decoder := json.NewDecoder(r.Body)
+		var f IncomingPost
 
-			err := decoder.Decode(&f)
-			if err != nil {
-				http.Error(w, "Error decoding post request for average", http.StatusBadRequest)
-			} else {
-		*/
-
-		//Edit the values in order to send to assignment2 application
-
-		//Send response back to dialogflow with correct values in json format.
-		var test = outgoingPost{}
-		test.Contexts[0] = "shop"
-		test.Lang = "en"
-		test.Query = "Fuck you!"
-		test.SessionID = "dgfch43ret"
-		test.TimeZone = "America/New_York"
-
-		b, err := json.Marshal(test)
+		err := decoder.Decode(&f)
 		if err != nil {
-			fmt.Fprintln(w, "error marshalling")
-		}
-		url := "https://api.dialogflow.com/v1/query?v=20150910"
-		var body = []byte(b)
-		req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
-		if err != nil {
-			panic(err)
-		}
-		req.Header.Set("Content-Type", "Application/json")
-		req.Header.Set("Authorization", "Bearerd439bdaebe064bf5b1d910aef3fcf510")
+			http.Error(w, "Error decoding post request for average", http.StatusBadRequest)
+		} else {
+	*/
 
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		fmt.Fprintln(w, "sending message")
-		if err != nil {
-			panic(err)
-		}
-		defer resp.Body.Close()
+	//Edit the values in order to send to assignment2 application
 
-		//}
-	} else {
-		http.Error(w, "Invalid request type", http.StatusMethodNotAllowed)
+	//Send response back to dialogflow with correct values in json format.
+	var test = outgoingPost{}
+	test.Contexts[0] = "shop"
+	test.Lang = "en"
+	test.Query = "Fuck you!"
+	test.SessionID = "dgfch43ret"
+	test.TimeZone = "America/New_York"
+
+	b, err := json.Marshal(test)
+	if err != nil {
+		fmt.Fprintln(w, "error marshalling")
 	}
+	url := "https://api.dialogflow.com/v1/query?v=20150910"
+	var body = []byte(b)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	if err != nil {
+		panic(err)
+	}
+	req.Header.Set("Content-Type", "Application/json")
+	req.Header.Set("Authorization", "Bearerd439bdaebe064bf5b1d910aef3fcf510")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	fmt.Fprintln(w, "sending message")
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	//}
+	/*} else {
+		http.Error(w, "Invalid request type", http.StatusMethodNotAllowed)
+	}*/
 }
