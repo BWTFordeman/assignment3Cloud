@@ -2,10 +2,21 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 )
+
+//outgoingPost is the structure of json values posting to dialogflow
+type outgoingPost struct {
+	Contexts  map[int]string `json:"contexts"`
+	Lang      string         `json:"lang"`
+	Query     string         `json:"query"`
+	SessionID string         `json:"sessionId"`
+	TimeZone  string         `json:"timezone"`
+}
 
 //IncomingPost gets the json values from dialogflow
 type IncomingPost struct {
@@ -72,16 +83,29 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Error decoding post request for average", http.StatusBadRequest)
 			} else {
 		*/
+
 		//Edit the values in order to send to assignment2 application
 
 		//Send response back to dialogflow with correct values in json format.
+		var test = outgoingPost{}
+		test.Contexts[0] = "shop"
+		test.Lang = "en"
+		test.Query = "Fuck you!"
+		test.SessionID = "dgfch43ret"
+		test.TimeZone = "America/New_York"
+
+		b, err := json.Marshal(test)
+		if err != nil {
+			fmt.Fprintln(w, "error marshalling")
+		}
 		url := "https://api.dialogflow.com/v1/query?v=20150910"
-		var body = []byte(`{"title":"Do you think I am dumb?"}`)
+		var body = []byte(b)
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 		if err != nil {
 			panic(err)
 		}
 		req.Header.Set("Content-Type", "Application/json")
+		req.Header.Set("Authorization", "Bearerd439bdaebe064bf5b1d910aef3fcf510")
 
 		client := &http.Client{}
 		resp, err := client.Do(req)
