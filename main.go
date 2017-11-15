@@ -63,7 +63,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Send to assignment2
-	URL := "https://lit-harbor-76549.herokuapp.com/latest"
+	URL := "https://evil-barrow-41137.herokuapp.com/assignment2/latest/"
 
 	toSend, err := json.Marshal(l.Result.Parameters)
 
