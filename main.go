@@ -109,6 +109,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 
 		client := &http.Client{}
 		resp, err := client.Do(req)
+		fmt.Fprintln(w, "sending message")
 		if err != nil {
 			panic(err)
 		}
