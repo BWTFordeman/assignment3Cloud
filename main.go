@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -82,10 +81,18 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 
 	webhook := "https://hooks.slack.com/services/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"
 
-	w.Header().Set("Content-type", "application/x-www-form-urlencoded")
 	var body = []byte(`{"text":"Whats up?"}`)
-	http.NewRequest("POST", webhook, bytes.NewBuffer(body))
-	fmt.Fprintln(w, "hello")
+	req, err := http.NewRequest("POST", webhook, bytes.NewBuffer(body))
+	if err != nil {
+		http.Error(w, "Error parsing", http.StatusTeapot)
+	}
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		http.Error(w, "Error parsing", http.StatusTeapot)
+	}
+	defer resp.Body.Close()
+
 	//Get incoming post Request with json values from dialogflow
 	//if r.Method == "POST" {
 	/*	decoder := json.NewDecoder(r.Body)
