@@ -64,6 +64,10 @@ type IncomingPost struct {
   "sessionId": "edd422d8-9619-4871-9e31-53270f020cec"
 }*/
 
+type test struct {
+	Text string `json:"text"`
+}
+
 func main() {
 	http.HandleFunc("/", testhandler)
 
@@ -79,7 +83,9 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	form := r.Form
 
 	form.Get("text")
-	log.Println(form)
+
+	t := test{}
+	t.Text = form.Encode()
 
 	//sending message to dialogflow:
 
@@ -89,7 +95,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 
 	//Sending message to slack:
 	webhook := "https://hooks.slack.com/services/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"
-	var body = []byte(`{"text":"Whats up?"}`)
+	var body = []byte(t.Text)
 	req, err := http.NewRequest("POST", webhook, bytes.NewBuffer(body))
 	if err != nil {
 		http.Error(w, "Error parsing", http.StatusTeapot)
