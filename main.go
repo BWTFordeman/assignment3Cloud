@@ -74,7 +74,7 @@ func main() {
 
 func testhandler(w http.ResponseWriter, r *http.Request) {
 	//Get incoming post Request with json values from dialogflow
-	if r.Method == "POST" {
+	if r.Method == "GET" {
 		/*	decoder := json.NewDecoder(r.Body)
 			var f IncomingPost
 
