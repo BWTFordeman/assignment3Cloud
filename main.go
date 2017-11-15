@@ -72,10 +72,18 @@ func main() {
 }
 
 func testhandler(w http.ResponseWriter, r *http.Request) {
+	/*err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Error parsing", http.StatusTeapot)
+	}
+	form := r.Form
+
+	form.Get("text")*/
 
 	webhook := "https://hooks.slack.com/services/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"
-	w.Header().Set("Content-Type", "application/json")
-	var body = []byte(`{"text":"Fuck you!"}`)
+
+	w.Header().Set("Content-type", "application/x-www-form-urlencoded")
+	var body = []byte(`{"text":"Whats up?"}`)
 	http.NewRequest("POST", webhook, bytes.NewBuffer(body))
 	fmt.Fprintln(w, "hello")
 	//Get incoming post Request with json values from dialogflow
