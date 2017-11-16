@@ -82,7 +82,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	str += " and "
 	str += l.Result.Parameters.TargetCurrency
 	str += " is "
-	str += strconv.FormatFloat(float64(current), 'f', 6, 32)
+	str += strconv.FormatFloat(float64(current), 'f', 4, 32)
 	str += "."
 
 	//Send back result to user:
