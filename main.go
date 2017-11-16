@@ -48,12 +48,12 @@ type CurrencyRequest struct {
 
 func main() {
 	http.HandleFunc("/dialogflow", testhandler)
-
 	log.Println("http.ListenAndServe", http.ListenAndServe(":"+os.Getenv("PORT"), nil), nil)
 }
 
 func testhandler(w http.ResponseWriter, r *http.Request) {
 
+	//Get base and target currency from dialogflow
 	var l FromDialogFlow
 
 	err := json.NewDecoder(r.Body).Decode(&l)
@@ -62,21 +62,19 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Send to assignment2
+	//Post request to mlab data:
 	URL := "https://evil-barrow-41137.herokuapp.com/assignment2/latest/"
 
 	toSend, err := json.Marshal(l.Result.Parameters)
 
 	resp, err := http.Post(URL, "application/json", bytes.NewReader(toSend))
 	if err != nil {
-		//respond to error
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 	}
 	var current float64
 	err = json.NewDecoder(resp.Body).Decode(&current)
 
-	log.Println(current)
-
-	//send back to dialogflow
+	//Make result as string
 	var dialogResponse CurrencyRequest
 	str := ""
 	str += "The rate between "
@@ -84,9 +82,10 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	str += " and "
 	str += l.Result.Parameters.TargetCurrency
 	str += " is "
-	str += strconv.FormatFloat(float64(current), 'f', 2, 32)
+	str += strconv.FormatFloat(float64(current), 'f', 6, 32)
 	str += "."
 
+	//Send back result to user:
 	dialogResponse.DisplayText = str
 	dialogResponse.Speech = str
 
