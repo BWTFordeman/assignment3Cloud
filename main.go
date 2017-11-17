@@ -16,6 +16,7 @@ type FromDialogFlow struct {
 			BaseCurrency   string `json:"baseCurrency"`
 			TargetCurrency string `json:"targetCurrency"`
 			Average        string `json:"average"`
+			Number         string `json:"number"`
 		} `json:"parameters"`
 	} `json:"result"`
 }
@@ -71,6 +72,15 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var current float64
 	err = json.NewDecoder(resp.Body).Decode(&current)
+
+	if l.Result.Parameters.Number != "" {
+		number, err2 := strconv.ParseFloat(l.Result.Parameters.Number, 64)
+		if err2 != nil {
+			status := http.StatusBadRequest
+			http.Error(w, http.StatusText(status), 400)
+		}
+		current *= number
+	}
 
 	//Make result as string
 	var dialogResponse CurrencyRequest
