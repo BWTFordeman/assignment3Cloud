@@ -92,6 +92,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	str += " is "
 	str += strconv.FormatFloat(float64(current), 'f', -1, 32)
 	str += "."
+	if current == 0 {
+		str = "Currency not supported!"
+		status := http.StatusBadRequest
+		http.Error(w, http.StatusText(status), 400)
+	}
 
 	//Send back result to user:
 	dialogResponse.DisplayText = str
