@@ -34,12 +34,11 @@ type LatestRequest struct {
 }
 
 func main() {
-	http.HandleFunc("/dialogflow", testhandler)
+	http.HandleFunc("/dialogflow", handler)
 	log.Println("http.ListenAndServe", http.ListenAndServe(":"+os.Getenv("PORT"), nil), nil)
 }
 
-func testhandler(w http.ResponseWriter, r *http.Request) {
-
+func handler(w http.ResponseWriter, r *http.Request) {
 	//Get base and target currency from dialogflow
 	var l FromDialogFlow
 
@@ -57,7 +56,6 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 
 	var URL string
 	str := ""
-
 	if l.Result.Parameters.Average == "average" {
 		URL = "https://evil-barrow-41137.herokuapp.com/assignment2/average/"
 		str += "The average value between "
@@ -104,5 +102,4 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
-
 }
