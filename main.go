@@ -9,33 +9,13 @@ import (
 	"strconv"
 )
 
-//outgoingPost is the structure of json values posting to dialogflow
-type outgoingPost struct {
-	Contexts  map[int]string `json:"contexts"`
-	Lang      string         `json:"lang"`
-	Query     string         `json:"query"`
-	SessionID string         `json:"sessionId"`
-	TimeZone  string         `json:"timezone"`
-}
-
-//IncomingPost gets the json values from dialogflow
-type IncomingPost struct {
-	ID        string `json:"id"`
-	Timestamp string `json:"timestamp"`
-	Lang      string `json:"lang"`
-	Result    struct {
-	} `json:"result"`
-	Status struct {
-	} `json:"status"`
-	SessionID string `json:"sessionId"`
-}
-
 //FromDialogFlow recieved base and target currency from dialogFlow
 type FromDialogFlow struct {
 	Result struct {
 		Parameters struct {
 			BaseCurrency   string `json:"baseCurrency"`
 			TargetCurrency string `json:"targetCurrency"`
+			Average        string `json:"average"`
 		} `json:"parameters"`
 	} `json:"result"`
 }
@@ -44,6 +24,12 @@ type FromDialogFlow struct {
 type CurrencyRequest struct {
 	DisplayText string `json:"displayText"`
 	Speech      string `json:"speech"`
+}
+
+//LatestRequest sends a latest request to an assignment2 application
+type LatestRequest struct {
+	BaseCurrency   string `json:"baseCurrency"`
+	TargetCurrency string `json:"targetCurrency"`
 }
 
 func main() {
@@ -62,10 +48,22 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Post request to mlab data:
-	URL := "https://evil-barrow-41137.herokuapp.com/assignment2/latest/"
+	//Post request to other application with currency values:
+	message := LatestRequest{}
+	message.BaseCurrency = l.Result.Parameters.BaseCurrency
+	message.TargetCurrency = l.Result.Parameters.TargetCurrency
+	toSend, err := json.Marshal(message)
 
-	toSend, err := json.Marshal(l.Result.Parameters)
+	var URL string
+	str := ""
+
+	if l.Result.Parameters.Average == "average" {
+		URL = "https://evil-barrow-41137.herokuapp.com/assignment2/average/"
+		str += "The average value between "
+	} else {
+		URL = "https://evil-barrow-41137.herokuapp.com/assignment2/latest/"
+		str += "The rate between "
+	}
 
 	resp, err := http.Post(URL, "application/json", bytes.NewReader(toSend))
 	if err != nil {
@@ -76,8 +74,6 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 
 	//Make result as string
 	var dialogResponse CurrencyRequest
-	str := ""
-	str += "The rate between "
 	str += l.Result.Parameters.BaseCurrency
 	str += " and "
 	str += l.Result.Parameters.TargetCurrency
