@@ -63,7 +63,9 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 		str += "The average value between "
 	} else {
 		URL = "https://evil-barrow-41137.herokuapp.com/assignment2/latest/"
-		str += "The rate between "
+		if l.Result.Parameters.Number == "" {
+			str += "The rate between "
+		}
 	}
 
 	resp, err := http.Post(URL, "application/json", bytes.NewReader(toSend))
@@ -80,12 +82,13 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, http.StatusText(status), 400)
 		}
 		current *= number
+		str += l.Result.Parameters.Number
 	}
 
 	//Make result as string
 	var dialogResponse CurrencyRequest
 	str += l.Result.Parameters.BaseCurrency
-	str += " and "
+	str += " to "
 	str += l.Result.Parameters.TargetCurrency
 	str += " is "
 	str += strconv.FormatFloat(float64(current), 'f', -1, 32)
