@@ -94,8 +94,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	str += "."
 	if current == 0 {
 		str = "Currency not supported!"
-		status := http.StatusBadRequest
-		http.Error(w, http.StatusText(status), 400)
+		/*status := http.StatusBadRequest
+		http.Error(w, http.StatusText(status), 400)*/
 	}
 
 	//Send back result to user:
