@@ -83,6 +83,7 @@ func testhandler(w http.ResponseWriter, r *http.Request) {
 		}
 		current *= number
 		str += l.Result.Parameters.Number
+		str += " "
 	}
 
 	//Make result as string
