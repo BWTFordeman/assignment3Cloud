@@ -79,6 +79,8 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 	var current float64
 	err = json.NewDecoder(resp.Body).Decode(&current)
 	if err != nil {
+		status := http.StatusBadRequest
+		http.Error(w, http.StatusText(status), 400)
 		fmt.Println(err)
 		return
 	}
@@ -115,6 +117,7 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(dialogResponse)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 }
 
