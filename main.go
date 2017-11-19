@@ -73,12 +73,14 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 	resp, err := http.Post(URL, "application/json", bytes.NewReader(toSend))
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	var current float64
 	err = json.NewDecoder(resp.Body).Decode(&current)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	if l.Result.Parameters.Number != "" {
@@ -86,6 +88,7 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 		if err2 != nil {
 			status := http.StatusBadRequest
 			http.Error(w, http.StatusText(status), 400)
+			return
 		}
 		current *= number
 		str += l.Result.Parameters.Number
