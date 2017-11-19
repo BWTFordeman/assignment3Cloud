@@ -75,6 +75,7 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 	resp, err := http.Post(URL, "application/json", bytes.NewReader(toSend))
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		log.Println(err.Error())
 		return
 	}
 
