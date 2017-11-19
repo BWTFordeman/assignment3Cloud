@@ -77,6 +77,7 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 
 	var current float64
 	err = json.NewDecoder(resp.Body).Decode(&current)
+	fmt.Println(err)
 
 	if l.Result.Parameters.Number != "" {
 		number, err2 := strconv.ParseFloat(l.Result.Parameters.Number, 64)
