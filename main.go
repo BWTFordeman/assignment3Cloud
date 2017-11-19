@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -38,74 +39,83 @@ func main() {
 	log.Println("http.ListenAndServe", http.ListenAndServe(":"+os.Getenv("PORT"), nil), nil)
 }
 
+func postRequest(s string, w http.ResponseWriter, r *http.Request) {
+
+	URL := s
+	fmt.Println(os.Getenv("PORT"))
+
+	//Get base and target currency from dialogflow
+	var l FromDialogFlow
+
+	err := json.NewDecoder(r.Body).Decode(&l)
+	if err != nil {
+		http.Error(w, "Error decoding post request for average", http.StatusBadRequest)
+		return
+	}
+
+	//Post request to other application with currency values:
+	message := LatestRequest{}
+	message.BaseCurrency = l.Result.Parameters.BaseCurrency
+	message.TargetCurrency = l.Result.Parameters.TargetCurrency
+	toSend, err := json.Marshal(message)
+
+	str := ""
+	if l.Result.Parameters.Average == "average" {
+		URL += "average/"
+		str += "The average value of "
+	} else {
+		URL += "latest/"
+		if l.Result.Parameters.Number == "" {
+			str += "The rate of "
+		}
+	}
+	fmt.Println(URL)
+	resp, err := http.Post(URL, "application/json", bytes.NewReader(toSend))
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+	}
+
+	var current float64
+	err = json.NewDecoder(resp.Body).Decode(&current)
+
+	if l.Result.Parameters.Number != "" {
+		number, err2 := strconv.ParseFloat(l.Result.Parameters.Number, 64)
+		if err2 != nil {
+			status := http.StatusBadRequest
+			http.Error(w, http.StatusText(status), 400)
+		}
+		current *= number
+		str += l.Result.Parameters.Number
+		str += " "
+	}
+
+	//Make result as string
+	var dialogResponse CurrencyRequest
+	str += l.Result.Parameters.BaseCurrency
+	str += " to "
+	str += l.Result.Parameters.TargetCurrency
+	str += " is "
+	str += strconv.FormatFloat(float64(current), 'f', -1, 32)
+	str += "."
+	if current == 0 {
+		str = "Currency not supported!"
+	}
+
+	//Send back result to user:
+	dialogResponse.DisplayText = str
+	dialogResponse.Speech = str
+
+	http.Header.Add(w.Header(), "content-type", "application/json")
+	err = json.NewEncoder(w).Encode(dialogResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		//Get base and target currency from dialogflow
-		var l FromDialogFlow
+		postRequest(os.Getenv("BASEURL"), w, r)
 
-		err := json.NewDecoder(r.Body).Decode(&l)
-		if err != nil {
-			http.Error(w, "Error decoding post request for average", http.StatusBadRequest)
-			return
-		}
-
-		//Post request to other application with currency values:
-		message := LatestRequest{}
-		message.BaseCurrency = l.Result.Parameters.BaseCurrency
-		message.TargetCurrency = l.Result.Parameters.TargetCurrency
-		toSend, err := json.Marshal(message)
-
-		var URL string
-		str := ""
-		if l.Result.Parameters.Average == "average" {
-			URL = "https://evil-barrow-41137.herokuapp.com/assignment2/average/"
-			str += "The average value between "
-		} else {
-			URL = "https://evil-barrow-41137.herokuapp.com/assignment2/latest/"
-			if l.Result.Parameters.Number == "" {
-				str += "The rate between "
-			}
-		}
-
-		resp, err := http.Post(URL, "application/json", bytes.NewReader(toSend))
-		if err != nil {
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-		}
-		var current float64
-		err = json.NewDecoder(resp.Body).Decode(&current)
-
-		if l.Result.Parameters.Number != "" {
-			number, err2 := strconv.ParseFloat(l.Result.Parameters.Number, 64)
-			if err2 != nil {
-				status := http.StatusBadRequest
-				http.Error(w, http.StatusText(status), 400)
-			}
-			current *= number
-			str += l.Result.Parameters.Number
-			str += " "
-		}
-
-		//Make result as string
-		var dialogResponse CurrencyRequest
-		str += l.Result.Parameters.BaseCurrency
-		str += " to "
-		str += l.Result.Parameters.TargetCurrency
-		str += " is "
-		str += strconv.FormatFloat(float64(current), 'f', -1, 32)
-		str += "."
-		if current == 0 {
-			str = "Currency not supported!"
-		}
-
-		//Send back result to user:
-		dialogResponse.DisplayText = str
-		dialogResponse.Speech = str
-
-		http.Header.Add(w.Header(), "content-type", "application/json")
-		err = json.NewEncoder(w).Encode(dialogResponse)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
 	} else {
 		http.Error(w, "Invalid request method", http.StatusBadRequest)
 	}
