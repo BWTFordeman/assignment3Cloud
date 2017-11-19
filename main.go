@@ -58,6 +58,8 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 	message.BaseCurrency = l.Result.Parameters.BaseCurrency
 	message.TargetCurrency = l.Result.Parameters.TargetCurrency
 	toSend, err := json.Marshal(message)
+	fmt.Println("message:", message)
+	fmt.Println("toSend:", toSend)
 
 	str := ""
 	if l.Result.Parameters.Average == "average" {
