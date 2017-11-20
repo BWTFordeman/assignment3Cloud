@@ -58,8 +58,6 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 	message.BaseCurrency = l.Result.Parameters.BaseCurrency
 	message.TargetCurrency = l.Result.Parameters.TargetCurrency
 	toSend, err := json.Marshal(message)
-	fmt.Println("message:", message)
-	fmt.Println("toSend:", toSend)
 
 	str := ""
 	if l.Result.Parameters.Average == "average" {
@@ -71,7 +69,6 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 			str += "The rate of "
 		}
 	}
-	fmt.Println(URL)
 	resp, err := http.Post(URL, "application/json", bytes.NewReader(toSend))
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -82,17 +79,14 @@ func postRequest(s string, w http.ResponseWriter, r *http.Request) {
 	var current float64
 	err = json.NewDecoder(resp.Body).Decode(&current)
 	if err != nil {
-		status := http.StatusBadRequest
-		http.Error(w, http.StatusText(status), 400)
-		fmt.Println(err)
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
 	if l.Result.Parameters.Number != "" {
 		number, err2 := strconv.ParseFloat(l.Result.Parameters.Number, 64)
 		if err2 != nil {
-			status := http.StatusBadRequest
-			http.Error(w, http.StatusText(status), 400)
+			http.Error(w, "Bad request", http.StatusBadRequest)
 			return
 		}
 		current *= number
